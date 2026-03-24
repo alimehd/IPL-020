@@ -2,7 +2,9 @@ import { neon } from '@neondatabase/serverless';
 import { Appointment } from './types';
 
 export function getSql() {
-  return neon(process.env.DATABASE_URL!);
+  const url = process.env.DATABASE_URL;
+  if (!url) throw new Error('DATABASE_URL environment variable is not set. Add it in Vercel → Settings → Environment Variables.');
+  return neon(url);
 }
 
 export async function ensureTable() {

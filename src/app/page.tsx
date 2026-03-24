@@ -95,8 +95,7 @@ export default function Home() {
           <iframe
             src="https://panoraven.com/en/embed/Z77oXbf"
             className="absolute inset-0 w-full h-full border-0"
-            allowFullScreen
-            allow="fullscreen; gyroscope; accelerometer"
+            allow="gyroscope; accelerometer"
             title="IPL Jaanimmarik Garage 360° Tour"
           />
         </div>
