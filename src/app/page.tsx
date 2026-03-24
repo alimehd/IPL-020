@@ -65,14 +65,6 @@ export default function Home() {
               Drag to look around inside the garage
             </p>
           </div>
-          <a
-            href="https://panoraven.com/en/embed/Z77oXbfa8R"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex-shrink-0 text-xs px-4 py-2 bg-white/15 text-white rounded-full border border-white/30 hover:bg-white/25 transition-colors font-medium"
-          >
-            Open Full Screen ↗
-          </a>
         </div>
 
         <div className="relative w-full" style={{ paddingBottom: '56.25%' }}>
