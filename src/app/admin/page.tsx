@@ -161,7 +161,7 @@ function Dashboard({ onSignOut }: { onSignOut: () => void }) {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold text-[#ff6b4a]">Admin Dashboard</h2>
-          <p className="text-sm text-[#799351]">IPL Jaanimmarik Garage</p>
+          <p className="text-sm text-[#799351]">PWT Jaanimmarik Garage</p>
         </div>
         <div className="flex items-center gap-3">
           <Link href="/" className="text-sm text-[#799351] hover:text-[#ff6b4a] transition-colors flex items-center gap-1">

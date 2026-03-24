@@ -3,7 +3,7 @@ import Link from 'next/link';
 import BookingForm from '@/components/BookingForm';
 
 export const metadata = {
-  title: 'Book Appointment — IPL Jaanimmarik Garage',
+  title: 'Book Appointment — PWT Jaanimmarik Garage',
 };
 
 export default function BookPage() {
@@ -24,7 +24,7 @@ export default function BookPage() {
       <div>
         <h2 className="text-3xl font-bold text-[#ff6b4a]">Book an Appointment</h2>
         <p className="text-[#799351] mt-1">
-          IPL Jaanimmarik Garage · Open 9&nbsp;AM – 4&nbsp;PM
+          PWT Jaanimmarik Garage · Open 9&nbsp;AM – 4&nbsp;PM
         </p>
       </div>
 

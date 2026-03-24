@@ -11,7 +11,7 @@ export default function Home() {
         {/* Background photo */}
         <Image
           src="/garage.png"
-          alt="IPL Jaanimmarik Garage"
+          alt="PWT Jaanimmarik Garage"
           fill
           className="object-cover object-center"
           priority
@@ -30,7 +30,7 @@ export default function Home() {
             Garage<br />Appointment<br />Booking
           </h2>
           <p className="text-white/75 text-sm sm:text-base mb-6 leading-relaxed">
-            IPL Jaanimmarik Garage · Open Mon – Fri, 9&nbsp;AM – 4&nbsp;PM
+            PWT Jaanimmarik Garage · Open Mon – Fri, 9&nbsp;AM – 4&nbsp;PM
           </p>
           <div className="flex flex-wrap gap-3">
             <Link
@@ -80,7 +80,7 @@ export default function Home() {
             src="https://panoraven.com/en/embed/Z77oXbfa8R"
             className="absolute inset-0 w-full h-full border-0"
             allow="gyroscope; accelerometer"
-            title="IPL Jaanimmarik Garage 360° Tour"
+            title="PWT Jaanimmarik Garage 360° Tour"
           />
         </div>
       </section>
