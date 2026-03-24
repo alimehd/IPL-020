@@ -1,56 +1,64 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { ensureTable, getSql, rowToAppointment } from '@/lib/db';
+import { Appointment } from '@/lib/types';
 
-/**
- * Appointments API — ready for Neon DB integration.
- *
- * When Neon DB is connected:
- * 1. Install: npm install @neondatabase/serverless drizzle-orm drizzle-kit
- * 2. Set DATABASE_URL in .env.local (from Neon dashboard)
- * 3. Replace the TODO sections below with your Neon/Drizzle queries
- */
-
-// GET /api/appointments?date=YYYY-MM-DD
 export async function GET(req: NextRequest) {
-  const { searchParams } = new URL(req.url);
-  const date = searchParams.get('date');
+  try {
+    await ensureTable();
+    const sql = getSql();
+    const { searchParams } = new URL(req.url);
+    const date = searchParams.get('date');
 
-  // TODO: Replace with Neon DB query
-  // const db = neon(process.env.DATABASE_URL!);
-  // const rows = await db`SELECT * FROM appointments WHERE date = ${date} ORDER BY start_time ASC`;
-  // return NextResponse.json(rows);
+    const rows = date
+      ? await sql`SELECT * FROM appointments WHERE date = ${date} ORDER BY start_time ASC`
+      : await sql`SELECT * FROM appointments ORDER BY date ASC, start_time ASC`;
 
-  return NextResponse.json({
-    message: 'DB not connected yet — using localStorage on client.',
-    date,
-    appointments: [],
-  });
+    return NextResponse.json(rows.map(rowToAppointment));
+  } catch (err) {
+    console.error('GET /api/appointments error:', err);
+    return NextResponse.json({ error: 'Failed to load appointments' }, { status: 500 });
+  }
 }
 
-// POST /api/appointments
 export async function POST(req: NextRequest) {
-  const body = await req.json();
+  try {
+    await ensureTable();
+    const sql = getSql();
+    const appt: Appointment = await req.json();
 
-  // TODO: Replace with Neon DB insert
-  // const db = neon(process.env.DATABASE_URL!);
-  // await db`
-  //   INSERT INTO appointments (id, date, start_time, end_time, break_end_time,
-  //     service_id, vehicle_type, client_name, client_phone, notes, created_at)
-  //   VALUES (${body.id}, ${body.date}, ${body.startTime}, ${body.endTime},
-  //     ${body.breakEndTime}, ${body.serviceId}, ${body.vehicleType},
-  //     ${body.clientName}, ${body.clientPhone}, ${body.notes}, ${body.createdAt})
-  // `;
+    await sql`
+      INSERT INTO appointments
+        (id, date, start_time, end_time, break_end_time,
+         service_id, vehicle_type, client_name, client_phone, notes, created_at)
+      VALUES
+        (${appt.id}, ${appt.date}, ${appt.startTime}, ${appt.endTime},
+         ${appt.breakEndTime}, ${appt.serviceId}, ${appt.vehicleType},
+         ${appt.clientName}, ${appt.clientPhone ?? ''}, ${appt.notes ?? ''},
+         ${appt.createdAt})
+    `;
 
-  return NextResponse.json({ success: true, appointment: body });
+    return NextResponse.json({ success: true, appointment: appt });
+  } catch (err) {
+    console.error('POST /api/appointments error:', err);
+    return NextResponse.json({ error: 'Failed to save appointment' }, { status: 500 });
+  }
 }
 
-// DELETE /api/appointments/:id
 export async function DELETE(req: NextRequest) {
-  const { searchParams } = new URL(req.url);
-  const id = searchParams.get('id');
+  try {
+    await ensureTable();
+    const sql = getSql();
+    const { searchParams } = new URL(req.url);
+    const id = searchParams.get('id');
 
-  // TODO: Replace with Neon DB delete
-  // const db = neon(process.env.DATABASE_URL!);
-  // await db`DELETE FROM appointments WHERE id = ${id}`;
+    if (!id) {
+      return NextResponse.json({ error: 'Missing id' }, { status: 400 });
+    }
 
-  return NextResponse.json({ success: true, id });
+    await sql`DELETE FROM appointments WHERE id = ${id}`;
+    return NextResponse.json({ success: true });
+  } catch (err) {
+    console.error('DELETE /api/appointments error:', err);
+    return NextResponse.json({ error: 'Failed to delete appointment' }, { status: 500 });
+  }
 }

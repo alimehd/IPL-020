@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { VehicleType } from '@/lib/types';
 import { getServicesForVehicle, VEHICLE_LABELS, VEHICLE_ICONS, formatDuration, getServiceById } from '@/lib/services';
 import { addMinutes, formatTime12, getAvailableSlots, getTodayString } from '@/lib/timeUtils';
-import { addAppointment, loadAppointments } from '@/lib/store';
+import { fetchAppointments, createAppointment } from '@/lib/api';
 import { v4 as uuidv4 } from 'uuid';
 
 const VEHICLES: VehicleType[] = ['skidoo', 'honda', 'car', 'truck'];
@@ -30,10 +30,11 @@ export default function BookingForm() {
 
   useEffect(() => {
     if (date && service) {
-      const all = loadAppointments();
-      const slots = getAvailableSlots(all, date, service.durationMinutes);
-      setAvailableSlots(slots);
-      setStartTime('');
+      fetchAppointments(date).then((all) => {
+        const slots = getAvailableSlots(all, date, service.durationMinutes);
+        setAvailableSlots(slots);
+        setStartTime('');
+      });
     }
   }, [date, service]);
 
@@ -59,8 +60,7 @@ export default function BookingForm() {
       createdAt: new Date().toISOString(),
     };
 
-    // Save locally (API call will be wired in after Neon DB setup)
-    addAppointment(appointment);
+    await createAppointment(appointment);
     setLoading(false);
     setSubmitted(true);
   };
