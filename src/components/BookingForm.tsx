@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { VehicleType } from '@/lib/types';
 import { getServicesForVehicle, VEHICLE_LABELS, VEHICLE_ICONS, formatDuration, getServiceById } from '@/lib/services';
 import { addMinutes, formatTime12, getAvailableSlots, getTodayString } from '@/lib/timeUtils';
-import { fetchAppointments, createAppointment } from '@/lib/api';
+import { fetchAppointments, createAppointment, fetchBlockedDays } from '@/lib/api';
 import { v4 as uuidv4 } from 'uuid';
 
 const VEHICLES: VehicleType[] = ['skidoo', 'honda', 'car', 'truck'];
@@ -23,19 +23,35 @@ export default function BookingForm() {
   const [clientPhone, setClientPhone] = useState('');
   const [notes, setNotes] = useState('');
   const [availableSlots, setAvailableSlots] = useState<string[]>([]);
+  const [isBlocked, setIsBlocked] = useState(false);
+  const [blockedReason, setBlockedReason] = useState('');
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const service = serviceId ? getServiceById(serviceId) : null;
 
   useEffect(() => {
-    if (date && service) {
-      fetchAppointments(date).then((all) => {
-        const slots = getAvailableSlots(all, date, service.durationMinutes);
-        setAvailableSlots(slots);
+    if (!date) return;
+    // Check if day is blocked first
+    fetchBlockedDays().then((blocked) => {
+      const found = blocked.find((b) => b.date === date);
+      if (found) {
+        setIsBlocked(true);
+        setBlockedReason(found.reason || '');
+        setAvailableSlots([]);
         setStartTime('');
-      });
-    }
+      } else {
+        setIsBlocked(false);
+        setBlockedReason('');
+        if (service) {
+          fetchAppointments(date).then((all) => {
+            const slots = getAvailableSlots(all, date, service.durationMinutes);
+            setAvailableSlots(slots);
+            setStartTime('');
+          });
+        }
+      }
+    });
   }, [date, service]);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -221,7 +237,17 @@ export default function BookingForm() {
               />
             </div>
 
-            {service && (
+            {isBlocked ? (
+              <div className="bg-red-50 border-2 border-red-200 rounded-xl p-4 flex items-start gap-3">
+                <span className="text-red-400 text-xl flex-shrink-0">🚫</span>
+                <div>
+                  <p className="font-semibold text-red-600 text-sm">This day is not available</p>
+                  <p className="text-red-400 text-xs mt-0.5">
+                    {blockedReason || 'The garage is closed on this day.'} Please choose a different date.
+                  </p>
+                </div>
+              </div>
+            ) : service && (
               <div className="bg-[#f6edd3] rounded-xl p-3 text-sm flex items-center gap-2">
                 <span className="text-[#ff6b4a]">⏱</span>
                 <span className="text-gray-700">
@@ -231,6 +257,7 @@ export default function BookingForm() {
               </div>
             )}
 
+            {!isBlocked && (
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-3">
                 Available Time Slots
@@ -259,6 +286,7 @@ export default function BookingForm() {
                 </div>
               )}
             </div>
+            )}
 
             <div className="flex gap-3">
               <button
@@ -270,7 +298,7 @@ export default function BookingForm() {
               </button>
               <button
                 type="button"
-                disabled={!startTime}
+                disabled={!startTime || isBlocked}
                 onClick={() => setStep(3)}
                 className="flex-1 py-3 bg-[#ff6b4a] text-white rounded-xl font-semibold disabled:opacity-40 disabled:cursor-not-allowed hover:bg-[#e55a3a] transition-colors"
               >

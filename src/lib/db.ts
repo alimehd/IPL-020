@@ -9,19 +9,41 @@ export async function ensureTable() {
   const sql = getSql();
   await sql`
     CREATE TABLE IF NOT EXISTS appointments (
-      id           TEXT PRIMARY KEY,
-      date         TEXT NOT NULL,
-      start_time   TEXT NOT NULL,
-      end_time     TEXT NOT NULL,
+      id             TEXT PRIMARY KEY,
+      date           TEXT NOT NULL,
+      start_time     TEXT NOT NULL,
+      end_time       TEXT NOT NULL,
       break_end_time TEXT NOT NULL,
-      service_id   TEXT NOT NULL,
-      vehicle_type TEXT NOT NULL,
-      client_name  TEXT NOT NULL,
-      client_phone TEXT NOT NULL DEFAULT '',
-      notes        TEXT NOT NULL DEFAULT '',
-      created_at   TEXT NOT NULL
+      service_id     TEXT NOT NULL,
+      vehicle_type   TEXT NOT NULL,
+      client_name    TEXT NOT NULL,
+      client_phone   TEXT NOT NULL DEFAULT '',
+      notes          TEXT NOT NULL DEFAULT '',
+      created_at     TEXT NOT NULL
     )
   `;
+}
+
+export async function ensureBlockedDaysTable() {
+  const sql = getSql();
+  await sql`
+    CREATE TABLE IF NOT EXISTS blocked_days (
+      date       TEXT PRIMARY KEY,
+      reason     TEXT NOT NULL DEFAULT '',
+      created_at TEXT NOT NULL
+    )
+  `;
+}
+
+export interface BlockedDay {
+  date: string;
+  reason: string;
+  createdAt: string;
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function rowToBlockedDay(row: Record<string, any>): BlockedDay {
+  return { date: row.date, reason: row.reason, createdAt: row.created_at };
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

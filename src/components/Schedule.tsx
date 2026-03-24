@@ -12,7 +12,8 @@ import {
   isPastDate,
   timeToMinutes,
 } from '@/lib/timeUtils';
-import { fetchAppointments, removeAppointment } from '@/lib/api';
+import { fetchAppointments, removeAppointment, fetchBlockedDays } from '@/lib/api';
+import { BlockedDay } from '@/lib/db';
 
 const TOTAL_MINUTES = timeToMinutes(GARAGE_CLOSE) - timeToMinutes(GARAGE_OPEN);
 const OPEN_MIN = timeToMinutes(GARAGE_OPEN);
@@ -147,12 +148,14 @@ export default function Schedule() {
   const [weekAnchor, setWeekAnchor] = useState(today);
   const [selectedDate, setSelectedDate] = useState(today);
   const [allAppointments, setAllAppointments] = useState<Appointment[]>([]);
+  const [blockedDays, setBlockedDays] = useState<BlockedDay[]>([]);
   const [loading, setLoading] = useState(true);
 
   const reload = useCallback(async () => {
     setLoading(true);
-    const data = await fetchAppointments();
+    const [data, blocked] = await Promise.all([fetchAppointments(), fetchBlockedDays()]);
     setAllAppointments(data);
+    setBlockedDays(blocked);
     setLoading(false);
   }, []);
 
@@ -177,6 +180,7 @@ export default function Schedule() {
 
   const dayAppointments = allAppointments.filter((a) => a.date === selectedDate);
   const sortedDayAppts = [...dayAppointments].sort((a, b) => a.startTime.localeCompare(b.startTime));
+  const selectedBlocked = blockedDays.find((b) => b.date === selectedDate);
 
   const weekLabel = (() => {
     const first = new Date(weekDates[0] + 'T12:00:00');
@@ -210,20 +214,26 @@ export default function Schedule() {
             const isSelected = date === selectedDate;
             const isToday = date === today;
             const isPast = isPastDate(date);
+            const isBlockedDay = blockedDays.some((b) => b.date === date);
             return (
               <button
                 key={date}
                 onClick={() => setSelectedDate(date)}
                 className={`flex flex-col items-center px-3 sm:px-4 py-2 rounded-xl transition-all min-w-[52px] sm:min-w-[64px] ${
-                  isSelected ? 'bg-[#ff6b4a] text-white shadow' : isPast ? 'text-gray-400' : 'hover:bg-[#f6edd3] text-gray-700'
+                  isSelected
+                    ? isBlockedDay ? 'bg-red-500 text-white shadow' : 'bg-[#ff6b4a] text-white shadow'
+                    : isPast ? 'text-gray-400'
+                    : isBlockedDay ? 'hover:bg-red-50 text-red-400'
+                    : 'hover:bg-[#f6edd3] text-gray-700'
                 }`}
               >
-                <span className={`text-[10px] font-semibold uppercase tracking-wide ${isSelected ? 'text-white/80' : isPast ? 'text-gray-400' : 'text-[#799351]'}`}>
+                <span className={`text-[10px] font-semibold uppercase tracking-wide ${isSelected ? 'text-white/80' : isPast ? 'text-gray-400' : isBlockedDay ? 'text-red-400' : 'text-[#799351]'}`}>
                   {DAY_LABELS[idx]}
                 </span>
                 <span className={`text-lg font-bold leading-tight ${isPast && !isSelected ? 'text-gray-300' : ''}`}>{dayNum}</span>
-                {isToday && !isSelected && <span className="w-1 h-1 rounded-full bg-[#ff6b4a] mt-0.5" />}
-                {count > 0 && (
+                {isToday && !isSelected && <span className={`w-1 h-1 rounded-full mt-0.5 ${isBlockedDay ? 'bg-red-400' : 'bg-[#ff6b4a]'}`} />}
+                {isBlockedDay && !isSelected && <span className="text-[9px] font-bold mt-0.5 text-red-400">closed</span>}
+                {!isBlockedDay && count > 0 && (
                   <span className={`text-[9px] font-bold mt-0.5 ${isSelected ? 'text-white/80' : 'text-[#ff6b4a]'}`}>
                     {count} apt
                   </span>
@@ -246,6 +256,10 @@ export default function Schedule() {
 
         {loading ? (
           <div className="h-10 sm:h-12 bg-[#f6edd3] rounded-lg animate-pulse" />
+        ) : selectedBlocked ? (
+          <div className="h-10 sm:h-12 bg-red-50 rounded-lg border-2 border-red-200 border-dashed flex items-center justify-center">
+            <span className="text-xs font-semibold text-red-400 uppercase tracking-widest">Closed</span>
+          </div>
         ) : (
           <DayTimeline date={selectedDate} appointments={dayAppointments} onDelete={handleDelete} />
         )}
@@ -277,7 +291,17 @@ export default function Schedule() {
 
       {/* Appointment list */}
       <div className="px-4 sm:px-6 pb-6 pt-2">
-        {isPastDate(selectedDate) ? (
+        {selectedBlocked ? (
+          <div className="text-center py-6">
+            <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-3">
+              <svg className="w-6 h-6 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+              </svg>
+            </div>
+            <p className="font-semibold text-red-500 mb-1">Garage Closed</p>
+            <p className="text-xs text-gray-400">{selectedBlocked.reason || 'This day is not available for bookings.'}</p>
+          </div>
+        ) : isPastDate(selectedDate) ? (
           <p className="text-center text-sm text-gray-400 py-4">This day has passed.</p>
         ) : loading ? (
           <div className="space-y-2">
