@@ -97,6 +97,27 @@ export function isPastDate(dateStr: string): boolean {
   return dateStr < getTodayString();
 }
 
+/** Returns true for Saturday (6) and Sunday (0). */
+export function isWeekend(dateStr: string): boolean {
+  const day = new Date(dateStr + 'T12:00:00').getDay();
+  return day === 0 || day === 6;
+}
+
+/** Returns the next weekday (Mon–Fri) on or after the given date string. */
+export function nextWeekday(dateStr: string): string {
+  const d = new Date(dateStr + 'T12:00:00');
+  while (d.getDay() === 0 || d.getDay() === 6) {
+    d.setDate(d.getDate() + 1);
+  }
+  return localDateStr(d);
+}
+
+export function getTomorrowWeekday(): string {
+  const d = new Date();
+  d.setDate(d.getDate() + 1);
+  return nextWeekday(localDateStr(d));
+}
+
 export function formatDateDisplay(dateStr: string): string {
   const date = new Date(dateStr + 'T12:00:00');
   return date.toLocaleDateString('en-CA', {

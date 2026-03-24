@@ -10,6 +10,7 @@ import {
   getTodayString,
   getWeekDates,
   isPastDate,
+  isWeekend,
   timeToMinutes,
 } from '@/lib/timeUtils';
 import { fetchAppointments, removeAppointment, fetchBlockedDays } from '@/lib/api';
@@ -180,7 +181,8 @@ export default function Schedule() {
 
   const dayAppointments = allAppointments.filter((a) => a.date === selectedDate);
   const sortedDayAppts = [...dayAppointments].sort((a, b) => a.startTime.localeCompare(b.startTime));
-  const selectedBlocked = blockedDays.find((b) => b.date === selectedDate);
+  const selectedIsWeekend = isWeekend(selectedDate);
+  const selectedBlocked = !selectedIsWeekend && blockedDays.find((b) => b.date === selectedDate);
 
   const weekLabel = (() => {
     const first = new Date(weekDates[0] + 'T12:00:00');
@@ -214,7 +216,7 @@ export default function Schedule() {
             const isSelected = date === selectedDate;
             const isToday = date === today;
             const isPast = isPastDate(date);
-            const isBlockedDay = blockedDays.some((b) => b.date === date);
+            const isBlockedDay = isWeekend(date) || blockedDays.some((b) => b.date === date);
             return (
               <button
                 key={date}
@@ -256,7 +258,7 @@ export default function Schedule() {
 
         {loading ? (
           <div className="h-10 sm:h-12 bg-[#f6edd3] rounded-lg animate-pulse" />
-        ) : selectedBlocked ? (
+        ) : (selectedIsWeekend || selectedBlocked) ? (
           <div className="h-10 sm:h-12 bg-red-50 rounded-lg border-2 border-red-200 border-dashed flex items-center justify-center">
             <span className="text-xs font-semibold text-red-400 uppercase tracking-widest">Closed</span>
           </div>
@@ -291,7 +293,7 @@ export default function Schedule() {
 
       {/* Appointment list */}
       <div className="px-4 sm:px-6 pb-6 pt-2">
-        {selectedBlocked ? (
+        {(selectedIsWeekend || selectedBlocked) ? (
           <div className="text-center py-6">
             <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-3">
               <svg className="w-6 h-6 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -299,7 +301,11 @@ export default function Schedule() {
               </svg>
             </div>
             <p className="font-semibold text-red-500 mb-1">Garage Closed</p>
-            <p className="text-xs text-gray-400">{selectedBlocked.reason || 'This day is not available for bookings.'}</p>
+            <p className="text-xs text-gray-400">
+              {selectedIsWeekend
+                ? 'The garage is closed on Saturdays and Sundays.'
+                : (selectedBlocked && typeof selectedBlocked === 'object' && selectedBlocked.reason) || 'This day is not available for bookings.'}
+            </p>
           </div>
         ) : isPastDate(selectedDate) ? (
           <p className="text-center text-sm text-gray-400 py-4">This day has passed.</p>

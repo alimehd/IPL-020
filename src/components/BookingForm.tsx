@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { VehicleType } from '@/lib/types';
 import { getServicesForVehicle, VEHICLE_LABELS, VEHICLE_ICONS, formatDuration, getServiceById } from '@/lib/services';
-import { addMinutes, formatTime12, getAvailableSlots, getTodayString, getTomorrowString } from '@/lib/timeUtils';
+import { addMinutes, formatTime12, getAvailableSlots, getTodayString, isWeekend, nextWeekday, getTomorrowWeekday } from '@/lib/timeUtils';
 import { fetchAppointments, createAppointment, fetchBlockedDays } from '@/lib/api';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -19,8 +19,8 @@ export default function BookingForm() {
   const [serviceId, setServiceId] = useState('');
   const [date, setDate] = useState(() => {
     const param = searchParams.get('date');
-    // Don't allow today or past dates as default
-    return param && param > getTodayString() ? param : getTomorrowString();
+    const candidate = param && param > getTodayString() ? param : getTomorrowWeekday();
+    return nextWeekday(candidate);
   });
   const [startTime, setStartTime] = useState('');
   const [clientName, setClientName] = useState('');
@@ -36,7 +36,16 @@ export default function BookingForm() {
 
   useEffect(() => {
     if (!date) return;
-    // Check if day is blocked first
+
+    // Weekends are always closed
+    if (isWeekend(date)) {
+      setIsBlocked(true);
+      setBlockedReason('The garage is closed on Saturdays and Sundays.');
+      setAvailableSlots([]);
+      setStartTime('');
+      return;
+    }
+
     fetchBlockedDays().then((blocked) => {
       const found = blocked.find((b) => b.date === date);
       if (found) {
@@ -234,11 +243,15 @@ export default function BookingForm() {
               <input
                 type="date"
                 value={date}
-                min={getTomorrowString()}
-                onChange={(e) => setDate(e.target.value)}
+                min={getTomorrowWeekday()}
+                onChange={(e) => {
+                  const picked = e.target.value;
+                  setDate(isWeekend(picked) ? nextWeekday(picked) : picked);
+                }}
                 required
                 className="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-[#ff6b4a] text-gray-800"
               />
+              <p className="text-xs text-[#799351]/70 mt-1">Open Monday – Friday only</p>
             </div>
 
             {isBlocked ? (
