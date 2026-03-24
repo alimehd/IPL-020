@@ -1,7 +1,6 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import Header from '@/components/Header';
-import ServicesTicker from '@/components/ServicesTicker';
 
 export const metadata: Metadata = {
   title: 'IPL Jaanimmarik Garage — Kuujjuaq',
@@ -18,7 +17,6 @@ export default function RootLayout({
     <html lang="en">
       <body className="min-h-screen bg-[#f6edd3]">
         <Header />
-        <ServicesTicker />
         <main className="max-w-5xl mx-auto px-4 py-8">{children}</main>
         <footer className="border-t border-[#a1dd70]/30 mt-12">
           <div className="max-w-5xl mx-auto px-4 py-6 text-center text-sm text-[#799351]">

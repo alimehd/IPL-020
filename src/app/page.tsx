@@ -54,35 +54,19 @@ export default function Home() {
         <Schedule />
       </section>
 
-      {/* ── Call banner ── */}
-      <section className="bg-[#ff6b4a] rounded-2xl p-5 sm:p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-        <div>
-          <p className="font-bold text-white text-lg">Prefer to call?</p>
-          <p className="text-white/80 text-sm mt-0.5">
-            Reach us at the school to reserve your spot.
-          </p>
-        </div>
-        <a
-          href="tel:8199642961"
-          className="flex-shrink-0 px-6 py-3 bg-white text-[#ff6b4a] rounded-full font-bold hover:bg-[#f6edd3] transition-colors text-base"
-        >
-          📞 (819) 964-2961
-        </a>
-      </section>
-
       {/* ── 360° Garage Tour ── */}
       <section className="rounded-2xl overflow-hidden shadow-md border border-[#a1dd70]/30 bg-white">
         <div className="bg-[#799351] px-5 sm:px-8 py-4 flex items-center justify-between gap-3">
           <div>
             <h3 className="text-white font-bold text-lg leading-tight">
-              🔄 Tour the Garage in 360°
+              Tour the Garage in 360°
             </h3>
             <p className="text-[#a1dd70] text-xs mt-0.5">
               Drag to look around inside the garage
             </p>
           </div>
           <a
-            href="https://panoraven.com/en/embed/Z77oXbf"
+            href="https://panoraven.com/en/embed/Z77oXbfa8R"
             target="_blank"
             rel="noopener noreferrer"
             className="flex-shrink-0 text-xs px-4 py-2 bg-white/15 text-white rounded-full border border-white/30 hover:bg-white/25 transition-colors font-medium"
@@ -93,7 +77,7 @@ export default function Home() {
 
         <div className="relative w-full" style={{ paddingBottom: '56.25%' }}>
           <iframe
-            src="https://panoraven.com/en/embed/Z77oXbf"
+            src="https://panoraven.com/en/embed/Z77oXbfa8R"
             className="absolute inset-0 w-full h-full border-0"
             allow="gyroscope; accelerometer"
             title="IPL Jaanimmarik Garage 360° Tour"

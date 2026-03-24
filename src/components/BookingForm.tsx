@@ -186,7 +186,7 @@ export default function BookingForm() {
                     <button
                       key={svc.id}
                       type="button"
-                      onClick={() => setServiceId(svc.id)}
+                      onClick={() => { setServiceId(svc.id); setStep(2); }}
                       className={`w-full flex items-center justify-between px-4 py-3 rounded-xl border-2 transition-all text-sm ${
                         serviceId === svc.id
                           ? 'border-[#ff6b4a] bg-[#ff6b4a]/8'
