@@ -52,13 +52,6 @@ export default function Header() {
               <PhoneIcon />
               {SCHOOL_PHONE}
             </a>
-            <Link
-              href="/admin"
-              className="px-4 py-2 rounded-full text-[#799351]/50 hover:text-[#799351] transition-colors duration-200 text-xs"
-              title="Admin"
-            >
-              ⚙
-            </Link>
           </nav>
 
           {/* Mobile: Book button only */}
