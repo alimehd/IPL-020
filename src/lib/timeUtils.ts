@@ -71,8 +71,30 @@ export function getAvailableSlots(
   return slots;
 }
 
+/** Format a Date object as YYYY-MM-DD using LOCAL time (not UTC). */
+function localDateStr(d: Date): string {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+}
+
+export function getTodayString(): string {
+  return localDateStr(new Date());
+}
+
+export function getTomorrowString(): string {
+  const d = new Date();
+  d.setDate(d.getDate() + 1);
+  return localDateStr(d);
+}
+
 export function isToday(dateStr: string): boolean {
-  return new Date().toISOString().slice(0, 10) === dateStr;
+  return getTodayString() === dateStr;
+}
+
+export function isPastDate(dateStr: string): boolean {
+  return dateStr < getTodayString();
 }
 
 export function formatDateDisplay(dateStr: string): string {
@@ -85,31 +107,17 @@ export function formatDateDisplay(dateStr: string): string {
   });
 }
 
-export function getTodayString(): string {
-  return new Date().toISOString().slice(0, 10);
-}
-
-export function getTomorrowString(): string {
-  const d = new Date();
-  d.setDate(d.getDate() + 1);
-  return d.toISOString().slice(0, 10);
-}
-
 /** Returns the 7 dates of the week containing the given date (Mon–Sun). */
 export function getWeekDates(anchorDate: string): string[] {
   const d = new Date(anchorDate + 'T12:00:00');
-  const day = d.getDay(); // 0=Sun
+  const day = d.getDay();
   const monday = new Date(d);
   monday.setDate(d.getDate() - ((day + 6) % 7));
   return Array.from({ length: 7 }, (_, i) => {
     const dt = new Date(monday);
     dt.setDate(monday.getDate() + i);
-    return dt.toISOString().slice(0, 10);
+    return localDateStr(dt);
   });
-}
-
-export function isPastDate(dateStr: string): boolean {
-  return dateStr < getTodayString();
 }
 
 export function getScheduleBlocks(appointments: Appointment[]) {
