@@ -1,73 +1,51 @@
+import Image from 'next/image';
 import Link from 'next/link';
 import Schedule from '@/components/Schedule';
-import { SERVICES, formatDuration } from '@/lib/services';
-
-const SERVICE_ICONS: Record<string, string> = {
-  'oil-change': '🛢️',
-  'tire-appointment': '🔧',
-  'changing-skis': '⛷️',
-  'spark-plugs': '⚡',
-  'case-oil': '🔩',
-  'gas-filters': '⛽',
-  'air-filters': '💨',
-  'kill-switch': '🔌',
-  'rims': '⭕',
-};
 
 export default function Home() {
   return (
     <div className="space-y-8 sm:space-y-10">
 
-      {/* ── Hero ── */}
-      <section className="text-center py-4 sm:py-6">
-        <h2 className="text-2xl sm:text-4xl font-bold text-[#ff6b4a] mb-2 sm:mb-3">
-          Garage Appointment Booking
-        </h2>
-        <p className="text-[#799351] text-base sm:text-lg max-w-xl mx-auto mb-5">
-          Book your next vehicle service at IPL Jaanimmarik Garage in Kuujjuaq.
-          Open Monday – Friday, 9&nbsp;AM – 4&nbsp;PM.
-        </p>
-        <Link
-          href="/book"
-          className="inline-block px-7 py-3 sm:px-8 sm:py-3.5 bg-[#ff6b4a] text-white rounded-full text-base sm:text-lg font-bold shadow-md hover:bg-[#e55a3a] hover:shadow-lg transition-all"
-        >
-          Book Now
-        </Link>
-      </section>
+      {/* ── Hero with garage photo ── */}
+      <section className="relative rounded-2xl overflow-hidden shadow-lg" style={{ minHeight: '320px' }}>
+        {/* Background photo */}
+        <Image
+          src="/garage.png"
+          alt="IPL Jaanimmarik Garage"
+          fill
+          className="object-cover object-center"
+          priority
+          sizes="(max-width: 1024px) 100vw, 1024px"
+        />
 
-      {/* ── Services Banner ── */}
-      <section className="bg-[#799351] rounded-2xl overflow-hidden">
-        <div className="px-5 sm:px-8 py-5 border-b border-white/10">
-          <h3 className="text-white font-bold text-lg tracking-tight">Our Services</h3>
-          <p className="text-[#a1dd70] text-xs mt-0.5">Ski-Doo · Honda · Car · Truck</p>
-        </div>
+        {/* Gradient overlay for readability */}
+        <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/45 to-black/20" />
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 gap-px bg-white/10">
-          {SERVICES.map((svc) => (
-            <Link
-              key={svc.id}
-              href={`/book`}
-              className="bg-[#799351] hover:bg-[#6b8448] transition-colors px-4 sm:px-6 py-4 flex items-center gap-3 group"
-            >
-              <span className="text-2xl sm:text-3xl flex-shrink-0 group-hover:scale-110 transition-transform">
-                {SERVICE_ICONS[svc.id]}
-              </span>
-              <div className="min-w-0">
-                <p className="text-white font-semibold text-sm leading-tight truncate">
-                  {svc.name}
-                </p>
-                <span className="inline-block mt-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#ff6b4a] text-white">
-                  {formatDuration(svc.durationMinutes)}
-                </span>
-              </div>
-            </Link>
-          ))}
-        </div>
-
-        <div className="px-5 sm:px-8 py-3 bg-[#6b8448]">
-          <p className="text-[#a1dd70] text-xs text-center">
-            All bookings include a recovery break between appointments
+        {/* Content */}
+        <div className="relative z-10 flex flex-col justify-center h-full px-7 sm:px-12 py-14 sm:py-20 max-w-xl">
+          <p className="text-[#a1dd70] text-xs sm:text-sm font-bold uppercase tracking-widest mb-2">
+            Kuujjuaq, Nunavik
           </p>
+          <h2 className="text-3xl sm:text-5xl font-bold text-white leading-tight mb-3 sm:mb-4 drop-shadow">
+            Garage<br />Appointment<br />Booking
+          </h2>
+          <p className="text-white/75 text-sm sm:text-base mb-6 leading-relaxed">
+            IPL Jaanimmarik Garage · Open Mon – Fri, 9&nbsp;AM – 4&nbsp;PM
+          </p>
+          <div className="flex flex-wrap gap-3">
+            <Link
+              href="/book"
+              className="px-7 py-3 bg-[#ff6b4a] text-white rounded-full font-bold shadow-lg hover:bg-[#e55a3a] hover:shadow-xl transition-all text-sm sm:text-base"
+            >
+              Book Now
+            </Link>
+            <a
+              href="tel:8199642961"
+              className="px-7 py-3 bg-white/15 backdrop-blur-sm text-white rounded-full font-semibold border border-white/30 hover:bg-white/25 transition-all text-sm sm:text-base"
+            >
+              📞 Call Us
+            </a>
+          </div>
         </div>
       </section>
 
@@ -90,6 +68,38 @@ export default function Home() {
         >
           📞 (819) 964-2961
         </a>
+      </section>
+
+      {/* ── 360° Garage Tour ── */}
+      <section className="rounded-2xl overflow-hidden shadow-md border border-[#a1dd70]/30 bg-white">
+        <div className="bg-[#799351] px-5 sm:px-8 py-4 flex items-center justify-between gap-3">
+          <div>
+            <h3 className="text-white font-bold text-lg leading-tight">
+              🔄 Tour the Garage in 360°
+            </h3>
+            <p className="text-[#a1dd70] text-xs mt-0.5">
+              Drag to look around inside the garage
+            </p>
+          </div>
+          <a
+            href="https://panoraven.com/en/embed/Z77oXbf"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex-shrink-0 text-xs px-4 py-2 bg-white/15 text-white rounded-full border border-white/30 hover:bg-white/25 transition-colors font-medium"
+          >
+            Open Full Screen ↗
+          </a>
+        </div>
+
+        <div className="relative w-full" style={{ paddingBottom: '56.25%' }}>
+          <iframe
+            src="https://panoraven.com/en/embed/Z77oXbf"
+            className="absolute inset-0 w-full h-full border-0"
+            allowFullScreen
+            allow="fullscreen; gyroscope; accelerometer"
+            title="IPL Jaanimmarik Garage 360° Tour"
+          />
+        </div>
       </section>
 
     </div>
