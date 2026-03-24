@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { VehicleType } from '@/lib/types';
 import { getServicesForVehicle, VEHICLE_LABELS, VEHICLE_ICONS, formatDuration, getServiceById } from '@/lib/services';
-import { addMinutes, formatTime12, getAvailableSlots, getTodayString } from '@/lib/timeUtils';
+import { addMinutes, formatTime12, getAvailableSlots, getTodayString, getTomorrowString } from '@/lib/timeUtils';
 import { fetchAppointments, createAppointment, fetchBlockedDays } from '@/lib/api';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -17,7 +17,11 @@ export default function BookingForm() {
   const [step, setStep] = useState(1);
   const [vehicleType, setVehicleType] = useState<VehicleType | null>(null);
   const [serviceId, setServiceId] = useState('');
-  const [date, setDate] = useState(searchParams.get('date') || getTodayString());
+  const [date, setDate] = useState(() => {
+    const param = searchParams.get('date');
+    // Don't allow today or past dates as default
+    return param && param > getTodayString() ? param : getTomorrowString();
+  });
   const [startTime, setStartTime] = useState('');
   const [clientName, setClientName] = useState('');
   const [clientPhone, setClientPhone] = useState('');
@@ -230,7 +234,7 @@ export default function BookingForm() {
               <input
                 type="date"
                 value={date}
-                min={getTodayString()}
+                min={getTomorrowString()}
                 onChange={(e) => setDate(e.target.value)}
                 required
                 className="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-[#ff6b4a] text-gray-800"

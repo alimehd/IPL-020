@@ -89,6 +89,12 @@ export function getTodayString(): string {
   return new Date().toISOString().slice(0, 10);
 }
 
+export function getTomorrowString(): string {
+  const d = new Date();
+  d.setDate(d.getDate() + 1);
+  return d.toISOString().slice(0, 10);
+}
+
 /** Returns the 7 dates of the week containing the given date (Mon–Sun). */
 export function getWeekDates(anchorDate: string): string[] {
   const d = new Date(anchorDate + 'T12:00:00');
