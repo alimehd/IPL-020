@@ -1,36 +1,56 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# IPL Jaanimmarik Garage
+
+Appointment booking website for the IPL Jaanimmarik school garage in Kuujjuaq, Nunavik.
+
+## Tech Stack
+
+- **Next.js 16** (App Router)
+- **TypeScript**
+- **Tailwind CSS**
+- **localStorage** (client-side, until Neon DB is wired in)
 
 ## Getting Started
 
-First, run the development server:
-
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Services
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Service | Duration | Vehicles |
+|---|---|---|
+| Oil Change | 20 min | All |
+| Tire Appointment | 30 min | Honda, Car, Truck |
+| Changing Skis | 30 min | Ski-Doo |
+| Spark Plugs | 30 min | All |
+| Case Oil Change | 10 min | All |
+| Gas Filters | 3h 30min (half day) | Ski-Doo |
+| Air Filters | 15 min | All |
+| Kill Switch | 1h 30min | Ski-Doo |
+| Rims | 30 min | All |
 
-## Learn More
+**30-minute break between every appointment.**
 
-To learn more about Next.js, take a look at the following resources:
+## Deployment (Vercel)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+1. Push to GitHub
+2. Import in Vercel
+3. Add `DATABASE_URL` from Neon dashboard in Vercel env vars
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Connecting Neon DB
 
-## Deploy on Vercel
+After deploying to Vercel and creating a Neon project:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```bash
+npm install @neondatabase/serverless drizzle-orm
+npm install -D drizzle-kit
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Then update `src/app/api/appointments/route.ts` — all TODO comments are ready to guide the migration.
+
+## Phone
+
+📞 (819) 964-2961 — school phone for reservations
